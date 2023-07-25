@@ -2,16 +2,18 @@ const express = require('express');
 const axios = require('axios');
 const { Pool } = require('pg');
 
+const PORT = process.env.PORT || 3001;
+
 const app = express();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 const pool = new Pool({
-  user: 'postgres',
-  host: 'localhost',
-  database: 'tableros',
-  password: '123456',
-  port: 5432,
+  user:process.env.DB_USER || 'postgres',
+  host:process.env.DB_HOST || 'localhost',
+  database:process.env.DB_NAME || 'tableros',
+  password:process.env.DB_PASSWORD || '123456',
+  port:process.env.DB_PORT || 5432,
 });
 
 async function getDataAndInsert(table, url, columns) {
@@ -106,6 +108,6 @@ app.get('/data', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('Servidor iniciado en el puerto 3000');
+app.listen(PORT, () => {
+  console.log(`Servidor iniciado en el puerto ${PORT}`);
 });
