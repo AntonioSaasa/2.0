@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tabla de datos</title>
+    <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f7f7f7;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    thead {
+      background-color: #f2f2f2;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+
+    tbody tr:hover {
+      background-color: #e9e9e9;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>AEROLINEA</th>
+        <th>STA</th>
+        <th>PEA</th>
+        <th>ETA</th>
+        <th>ATA</th>
+        <th>N° VUELO</th>
+        <th>RESPONSABLE CAB.</th>
+        <th>INICIO CAB.</th>
+        <th>FIN CAB.</th>
+        <th>RESPONSABLE ADU.</th>
+        <th>PRI. MALETA</th>
+        <th>ULT. MALETA</th>
+        <th>CIERRE ADU.</th>
+        <th>ETD</th>
+        <th>ATD</th>
+        <th>STATUS</th>
+        <th>COD. DEMORAS</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+      <!-- El contenido de la tabla se actualizará aquí -->
+      <% data.forEach(function(row) { %>
+        <tr>
+          <td><%= row.aer || '' %></td>
+          <td><%= row.sta ? new Date(row.sta).toLocaleString() : '' %></td>
+          <td><%= row.pea || '' %></td>
+          <td><%= row.eta ? new Date(row.eta).toLocaleString() : '' %></td>
+          <td><%= row.ata ? new Date(row.ata).toLocaleString() : '' %></td>
+          <td><%= row.v_arr || '' %></td>
+          <td><%= row.res || '' %></td>
+          <td><%= row.ho_ini || '' %></td>
+          <td><%= row.ho_fin || '' %></td>
+          <td><%= row.res_a || '' %></td>
+          <td><%= row.pri_bag || '' %></td>
+          <td><%= row.ul_bag || '' %></td>
+          <td><%= row.cie || '' %></td>
+          <td><%= row.etd ? new Date(row.etd).toLocaleString() : '' %></td>
+          <td><%= row.atd ? new Date(row.atd).toLocaleString() : '' %></td>
+          <td><%= row.stat || '' %></td>
+          <td><%= row.dem || '' %></td>
+        </tr>
+      <% }); %> 
+    </tbody>
+  </table>
+  </table>
+
+  <script>
+    function updateTable(data) {
+      var tableBody = document.getElementById('table-body');
+      tableBody.innerHTML = '';
+    
+      data.forEach(function (row) {
+        var newRow = document.createElement('tr');
+        newRow.innerHTML =
+          '<td>' + (row.aer ? row.aer : '') + '</td>' +
+          '<td>' + (isValidDate(row.sta) ? new Date(row.sta).toLocaleString() : '') + '</td>' +
+          '<td>' + (row.pea ? row.pea : '') + '</td>' +
+          '<td>' + (isValidDate(row.eta) ? new Date(row.eta).toLocaleString() : '') + '</td>' +
+          '<td>' + (isValidDate(row.ata) ? new Date(row.ata).toLocaleString() : '') + '</td>' +
+          '<td>' + (row.v_arr ? row.v_arr : '') + '</td>' +
+          '<td>' + (row.res ? row.res : '') + '</td>' +
+          '<td>' + (row.ho_ini ? row.ho_ini : '') + '</td>' +
+          '<td>' + (row.ho_fin ? row.ho_fin : '') + '</td>' +
+          '<td>' + (row.res_a ? row.res_a : '') + '</td>' +
+          '<td>' + (row.pri_bag ? row.pri_bag : '') + '</td>' +
+          '<td>' + (row.ul_bag ? row.ul_bag : '') + '</td>' +
+          '<td>' + (row.cie ? row.cie : '') + '</td>' +
+          '<td>' + (isValidDate(row.etd) ? new Date(row.etd).toLocaleString() : '') + '</td>' +
+          '<td>' + (isValidDate(row.atd) ? new Date(row.atd).toLocaleString() : '') + '</td>' +
+          '<td>' + (row.stat ? row.stat : '') + '</td>' +
+          '<td>' + (row.dem ? row.dem : '') + '</td>';
+    
+        tableBody.appendChild(newRow);
+      });
+    }
+    
+    function isValidDate(dateString) {
+      var date = new Date(dateString);
+      if (date.toString() === 'Invalid Date' || isNaN(date)) {
+        return false;
+      }
+    
+      // Verificar si el valor es igual a "31/12/1969, 19:00:00"
+      const invalidDate = new Date('1969-12-31T19:00:00').toLocaleString();
+      return date.toLocaleString() !== invalidDate;
+    }
+    
+  
+    function getData() {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', '/data', true);
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+          var responseData = JSON.parse(xhr.responseText);
+          updateTable(responseData.data);
+        }
+      };
+      xhr.send();
+    }
+  
+    getData();
+    setInterval(getData, 10000);
+  </script>
+  
+</body>
+</html>
